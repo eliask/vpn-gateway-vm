@@ -1,0 +1,7 @@
+system_packages:
+  - libstdc++5
+  - x11vnc
+  - firefox
+  - xvfb
+  - blackbox
+  - xterm

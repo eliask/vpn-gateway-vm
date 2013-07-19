@@ -1,0 +1,20 @@
+- name: Add the webupd8team PPA for the Oracle Java installer
+  apt_repository: repo=ppa:webupd8team/java
+
+- name: Create webupd8 installer directory
+  file: path=/var/cache/oracle-jdk7-installer state=directory
+
+# http://ppa.webupd8.org/post/41867468386/oracle-java-jdk-6-7-8-installer-now-supports-local
+- name: Copy JDK package to cache if one exists
+  copy: src=$item dest=/var/cache/oracle-jdk7-installer
+  with_fileglob:
+    - jdk-*.tar.gz
+
+- name: Accept the Java licence in debconf
+  shell: echo debconf shared/accepted-oracle-license-v1-1 select true | debconf-set-selections
+
+- name: Install Oracle Java 7
+  apt: pkg=$item install_recommends=no
+  with_items:
+    - oracle-java7-installer
+    - oracle-java7-set-default

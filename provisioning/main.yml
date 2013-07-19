@@ -1,0 +1,22 @@
+---
+- hosts: vagrant
+  vars_files:
+    - vars.yml
+  sudo: True
+
+  # http://www.matt-barrett.com/2010/01/remote-x-on-headless-server/
+  tasks:
+    - name: Set up system locale
+      command: locale-gen en_GB.UTF-8
+
+    - name: Install system packages
+      apt: pkg=$item update-cache=yes install_recommends=no update-cache=yes
+      with_items: ${system_packages}
+
+    - include: install_java7.yml
+
+    - name: set up crontab
+      cron: name='Launch X/VNC' reboot=yes user=vagrant job="$HOME/startup.sh"
+
+    - name: copy startup script
+      copy: src='startup.sh' dest='/home/vagrant/startup.sh' owner=vagrant mode=0755
